@@ -57,7 +57,7 @@ if(frame.pointables.length === 0) {
     ctx.fillText("No Hands Are Detected", canvasCenter-150, ctx.canvas.height/3);
     ctx.stroke();
 } else {
-    
+
 }
 
 
