@@ -1,5 +1,3 @@
-var context = new AudioContext();
-
 var Player = function (context) {
     this.playing = false;
 
@@ -13,20 +11,22 @@ var Player = function (context) {
 
     this.vco.connect(this.vca);
     this.vca.connect(context.destination);
-
 }
 
-Player.prototype.play = function (frequency) {
+Player.prototype.changeFreq = function (frequency) {
+    var that = this;
+    that.vco.frequency.value = frequency;
+}
+
+
+Player.prototype.play = function () {
     var that = this;
 
-    if (that.vco.frequency.value !== frequency || !that.playing) {
-        that.vco.frequency.value = frequency;
-        if (that.playing) {
-            clearInterval(that.interval);
-        }
+    if (!that.playing) {
+
         that.interval = setInterval(function(){ 
             var now = context.currentTime;
-            that.vca.gain.cancelScheduledValues( now );
+            //that.vca.gain.cancelScheduledValues( now );
             that.vca.gain.setValueAtTime(that.vca.gain.value, now);
             that.vca.gain.linearRampToValueAtTime(1 , now + 0.025);
             that.vca.gain.linearRampToValueAtTime(0 , now + 0.1);

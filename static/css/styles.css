@@ -5,16 +5,14 @@ canvas {
 }
 
 .options-menu {
-    margin: 10px;
+    padding: 10px;
     max-height: 100px;
 }
 
-.options-menu div {
-
-}
 img {
-    margin: 0 auto;
+    margin: 0 auto !important;
     max-height: 150px;
+    width: 90%;
     padding: 15px;
     border-radius: 5px;
 }
@@ -30,8 +28,4 @@ label input{ /* HIDE RADIO */
 
 label > input:checked + img{ /* (RADIO CHECKED) IMAGE STYLES */
   background-color: limegreen;
-}
-body, html {
-    width: 99%;
-    height: 100%;
 }
