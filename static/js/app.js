@@ -2,84 +2,85 @@
  * Created by Kyle on 2/28/2015.
  */
 
-var controller = new Leap.Controller({enableGestures: true, frameEventName: 'animationFrame'});
+//Gets the wave value from the checked radio button
+var wave = $('input[name="wave"]:checked').val() || "sine";
+player.setWaveform(wave);
 
+$('input[name="wave"]').change(function() {
+    if(this.checked) {
+        wave = this.value;
+        player.setWaveform(wave);
+    }
+});
+
+//Sets up the leap controller
+var controller = new Leap.Controller({enableGestures: true, frameEventName: 'animationFrame'});
 controller.on('connect', function () {
     console.log("Successfully connected");
-});
-controller.on('deviceStreaming', function() {
+});controller.on('deviceStreaming', function() {
     console.log('Device connected!');
 });
 controller.connect();
 
+
+//Creates the canvas for the leap feedback
 var canvas = document.getElementById("canvas"),
     ctx = canvas.getContext("2d"),
-    canvasCenter = (window.innerWidth-50) / 2;
-
+    canvasCenter = (window.innerWidth-40) / 2;
 ctx.canvas.width  = canvasCenter * 2;
-ctx.canvas.height = window.innerHeight-10;
+ctx.canvas.height = window.innerHeight*0.65;
+
+
+//Sets the frequency table for the C Major scale
+var freqs = [ 523, 587, 659, 698, 784, 880, 1046, 1174, 1318, 1396, 1568, 1760, 2092 ]
+var getFreq = function(y_val) {
+	return freqs[Math.ceil((1-y_val)*(freqs.length+1))-1]
+};
+
 
 controller.on('frame', function(frame) {
 
-ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
-ctx.font = "20pt sans-serif";
+    ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
+    ctx.font = "20pt sans-serif";
 
+    //Variable declarations
+    var normalized,
+        x,
+        y,
+        freq = 523,
+        rightHandDetected = false;
+        iBox = frame.interactionBox;
 
-//Variable declarations
-var position,
-    normalized,
-    x,
-    y,
-    leftHandY,
-    leftHandX,
-    rightHandY,
-    rightHandX,
-    iBox = frame.interactionBox;
+    frame.hands.forEach(function(hand){
+        if(hand.type == 'right') {
+            rightHandDetected = true;
+            position = hand.palmPosition;
+            normalized = iBox.normalizePoint(position, true);
+            x = ctx.canvas.width * normalized[0];
+            y = ctx.canvas.height * (1 - normalized[1]);
+            freq = getFreq(normalized[1]);
+            ctx.beginPath();
+            ctx.lineWidth = 4;
+            ctx.rect(x, y, 25, 25);
+            ctx.fill();
+            ctx.strokeStyle = 'black';
+            ctx.fillStyle = 'black';
+            ctx.stroke();
+        }
+    });
 
-//frame.hands.forEach(function(hand){
-//    position = hand.palmPosition;
-//    normalized = iBox.normalizePoint(position, true);
-//    if(hand.type == 'right') {
-//        rightHandY = ctx.canvas.height * (1-normalized[1]);
-//        rightHandX = ctx.canvas.width * normalized[0];
-//    } else {
-//        leftHandY = ctx.canvas.height * (1-normalized[1]);
-//        leftHandX = ctx.canvas.width * normalized[0];
-//    }
-//});
-
-
-//Gives message if no hands are in the Leap space
-if(frame.pointables.length === 0) {
-    ctx.beginPath();
-    ctx.lineWidth = 7;
-    ctx.strokeStyle = 'black';
-    ctx.fillText("No Hands Are Detected", canvasCenter-150, ctx.canvas.height/3);
-    ctx.stroke();
-} else {
-    myStuff.play();
-}
-
-
-
-frame.pointables.forEach(function(pointable) {
-    var finger = frame.finger(pointable.id);
-    if (finger.type > 0) {
-        var position = pointable.tipPosition;
-        normalized = iBox.normalizePoint(position, true);
-
-        //gets x and y coords of the finger tip position, normalized
-        x = ctx.canvas.width * normalized[0];
-        y = ctx.canvas.height * (1 - normalized[1]);
-
-
+    //Gives message if no hands are in the Leap space
+    if(!rightHandDetected) {
         ctx.beginPath();
-        ctx.lineWidth = 4;
-        ctx.rect(x, y, 40, 40);
-        ctx.fill();
+        ctx.lineWidth = 7;
         ctx.strokeStyle = 'black';
-        ctx.fillStyle = 'black';
+        ctx.fillText("Right hand is not Detected", canvasCenter-150, ctx.canvas.height/3);
         ctx.stroke();
+        //player.pause();
+    } else {
+        console.log("PLAYING NOTES");
+        player.play(freq);
+
     }
-});
+    rightHandDetected = false;
 });
