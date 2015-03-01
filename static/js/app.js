@@ -18,6 +18,11 @@ var canvas = document.getElementById("canvas"),
 ctx.canvas.width  = canvasCenter * 2;
 ctx.canvas.height = window.innerHeight*0.65;
 
+var freqs = [ 523, 587, 659, 698, 784, 880, 1046, 1174, 1318, 1396, 1568, 1760, 2092 ]
+var getFreq = function(y_val) {
+	return freqs[(1-y_val)*(freqs.lenght+1)]
+};
+
 controller.on('frame', function(frame) {
 
     ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
@@ -29,6 +34,7 @@ controller.on('frame', function(frame) {
         x,
         y,
         iBox = frame.interactionBox;
+	
 
 
 
