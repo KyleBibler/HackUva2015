@@ -28,7 +28,7 @@ Player.prototype.play = function () {
             var now = context.currentTime;
             //that.vca.gain.cancelScheduledValues( now );
             that.vca.gain.setValueAtTime(that.vca.gain.value, now);
-            that.vca.gain.linearRampToValueAtTime(1 , now + 0.025);
+            that.vca.gain.linearRampToValueAtTime(0.8 , now + 0.025);
             that.vca.gain.linearRampToValueAtTime(0 , now + 0.1);
         }, 125);
         that.playing = true;
