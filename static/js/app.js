@@ -32,25 +32,6 @@ controller.on('frame', function(frame) {
 
 
 
-
-    //Gives message if no hands are in the Leap space
-    if(frame.pointables.length === 0) {
-        playing = false;
-        ctx.beginPath();
-        ctx.lineWidth = 7;
-        ctx.strokeStyle = 'black';
-        ctx.fillText("No Hands Are Detected", canvasCenter-150, ctx.canvas.height/3);
-        ctx.stroke();
-    } else {
-        if(playing === false) {
-            playing = true;
-            console.log("PLAYING NOTES");
-            myStuff.play();
-
-        }
-
-    }
-
     frame.hands.forEach(function(hand){
         position = hand.palmPosition;
         normalized = iBox.normalizePoint(position, true);
@@ -72,6 +53,26 @@ controller.on('frame', function(frame) {
         ctx.fillStyle = 'black';
         ctx.stroke();
     });
+
+    //Gives message if no hands are in the Leap space
+    if(frame.pointables.length === 0) {
+        playing = false;
+        ctx.beginPath();
+        ctx.lineWidth = 7;
+        ctx.strokeStyle = 'black';
+        ctx.fillText("No Hands Are Detected", canvasCenter-150, ctx.canvas.height/3);
+        ctx.stroke();
+    } else {
+        if(playing === false) {
+            playing = true;
+            console.log("PLAYING NOTES");
+            myStuff.play();
+
+        }
+
+    }
+
+
 
 
 
